@@ -1,0 +1,90 @@
+class Player
+attr_reader :name, :marker
+
+  def initialize(name, marker)
+    @name = name
+    @marker = marker
+  end
+end
+
+class Game
+  def initialize(player_one, player_two)
+    @player_one=player_one
+    @player_two=player_two
+    @round = 1
+    play
+    
+  end
+
+  def play
+    board
+    player_input
+  end
+
+  def board
+    @row_column = [%w(- - - - - - -), %w(- - - - - - -), %w(- - - - - - -), %w(- - - - - - -), %w(- - - - - - -), %w(- - - - - - -)]
+    display_board
+  end 
+
+  def display_board
+    puts "| #{@row_column[5][0]} | #{@row_column[5][1]} | #{@row_column[5][2]} | #{@row_column[5][3]} | #{@row_column[5][4]} | #{@row_column[5][5]} | #{@row_column[5][6]} |"
+    puts "| #{@row_column[4][0]} | #{@row_column[4][1]} | #{@row_column[4][2]} | #{@row_column[4][3]} | #{@row_column[4][4]} | #{@row_column[4][5]} | #{@row_column[4][6]} |"
+    puts "| #{@row_column[3][0]} | #{@row_column[3][1]} | #{@row_column[3][2]} | #{@row_column[3][3]} | #{@row_column[3][4]} | #{@row_column[3][5]} | #{@row_column[3][6]} |"
+    puts "| #{@row_column[2][0]} | #{@row_column[2][1]} | #{@row_column[2][2]} | #{@row_column[2][3]} | #{@row_column[2][4]} | #{@row_column[2][5]} | #{@row_column[2][6]} |"
+    puts "| #{@row_column[1][0]} | #{@row_column[1][1]} | #{@row_column[1][2]} | #{@row_column[1][3]} | #{@row_column[1][4]} | #{@row_column[1][5]} | #{@row_column[1][6]} |"
+    puts "| #{@row_column[0][0]} | #{@row_column[0][1]} | #{@row_column[0][2]} | #{@row_column[0][3]} | #{@row_column[0][4]} | #{@row_column[0][5]} | #{@row_column[0][6]} |"
+    puts "| \u203E | \u203E | \u203E | \u203E | \u203E | \u203E | \u203E |"
+    puts "| 1 | 2 | 3 | 4 | 5 | 6 | 7 |"
+  end
+
+  def player_input
+    if @round.odd? 
+      puts "\n #{@player_one.name}, please choose a column to place your marker"
+      @player_one_input=gets.chomp
+        if @player_one_input.match?(/^[1-7]$/) 
+          update_board(0, @player_one_input.to_i-1)
+        else
+          error
+        end  
+    else
+      puts "\n #{@player_two.name}, please choose an available position on the board to place your marker"
+      @player_two_input=gets.chomp
+        if @player_two_input.match?(/^[1-7]$/) 
+          update_board(0, @player_two_input.to_i-1)
+        else
+          error
+        end  
+    end
+  end
+
+
+  def update_board(row, column)
+    if  @round.odd? 
+      if @row_column[row][column] == "-"
+        @row_column[row][column] = @player_one.marker
+      else
+        update_board(row+1, column)
+      end
+    else
+      if @row_column[row][column] == "-"
+        @row_column[row][column] = @player_two.marker
+      else
+        update_board(row + 1, column)
+      end
+    end
+    display_board
+  end
+
+  def error
+    puts "Erroneous input! Try again..."
+    player_input
+  end
+
+
+end
+
+puts "Player 1 : Choose your name"
+player_one = Player.new(gets.chomp, "X")
+puts "Player 2 : Choose your name"
+player_two = Player.new(gets.chomp, "O")
+Game.new(player_one, player_two)
