@@ -26,8 +26,10 @@ class Game
   def play
     clear
     display_board
-    if @game_over 
-      puts "\n Congratulations the winner is "
+    if @game_over && @round.odd?
+      puts "\n Congratulations the winner is #{@player_two.name}"
+    elsif @game_over 
+      puts "\n Congratulations the winner is #{@player_one.name}"
     else
       player_input
     end
