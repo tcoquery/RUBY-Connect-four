@@ -58,7 +58,7 @@ class Game
           error
         end  
     else
-      puts "\n #{@player_two.name}, please choose an available player on the board to place your marker"
+      puts "\n #{@player_two.name}, please choose a column to place your marker"
       @player_two_input=gets.chomp
         if @player_two_input.match?(/^[1-7]$/) 
           update_board(0, @player_two_input.to_i-1)
