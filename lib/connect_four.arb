@@ -1,3 +1,9 @@
+
+def clear
+  puts "\e[H\e[2J"
+end
+
+
 class Player
 attr_reader :name, :marker
 
@@ -12,18 +18,23 @@ class Game
     @player_one=player_one
     @player_two=player_two
     @round = 1
+    @game_over = false
+    board
     play
-    
   end
 
   def play
-    board
-    player_input
+    clear
+    display_board
+    if @game_over 
+      puts "\n Congratulations the winner is "
+    else
+      player_input
+    end
   end
 
   def board
     @row_column = [%w(- - - - - - -), %w(- - - - - - -), %w(- - - - - - -), %w(- - - - - - -), %w(- - - - - - -), %w(- - - - - - -)]
-    display_board
   end 
 
   def display_board
@@ -47,7 +58,7 @@ class Game
           error
         end  
     else
-      puts "\n #{@player_two.name}, please choose an available position on the board to place your marker"
+      puts "\n #{@player_two.name}, please choose an available player on the board to place your marker"
       @player_two_input=gets.chomp
         if @player_two_input.match?(/^[1-7]$/) 
           update_board(0, @player_two_input.to_i-1)
@@ -55,25 +66,76 @@ class Game
           error
         end  
     end
+    play
   end
 
 
   def update_board(row, column)
-    if  @round.odd? 
+    if @round.odd? 
       if @row_column[row][column] == "-"
         @row_column[row][column] = @player_one.marker
+        check_winner(row, column)
+        @round += 1
       else
         update_board(row+1, column)
       end
     else
       if @row_column[row][column] == "-"
         @row_column[row][column] = @player_two.marker
+        check_winner(row, column)
+        @round += 1
       else
         update_board(row + 1, column)
       end
     end
     display_board
   end
+
+  def check_winner(rows, columns)
+    board_height = 6
+    board_width = 7
+    player_marker = @row_column[rows][columns]
+    if player_marker == "-"
+        return
+    else
+        @row_column.each_with_index do |c, index|
+            c.each_with_index do |r, location|
+                if  location + 3 < board_width &&
+                    @row_column[index][location] == player_marker   &&
+                    @row_column[index][location+1] == player_marker &&
+                    @row_column[index][location+2] == player_marker &&
+                    @row_column[index][location+3] == player_marker
+                @game_over = true
+                end
+        
+                if  index + 3 < board_height 
+                if  @row_column[index][location] == player_marker   &&
+                    @row_column[index+2][location] == player_marker &&
+                    @row_column[index+2][location] == player_marker &&
+                    @row_column[index+3][location] == player_marker
+                    @game_over = true
+                end
+        
+                if  location + 3 < board_width &&
+                    @row_column[index][location] == player_marker     &&
+                    @row_column[index+1][location+1] == player_marker &&
+                    @row_column[index+2][location+2] == player_marker &&
+                    @row_column[index+3][location+3] == player_marker 
+                    @game_over = true
+                end
+                
+                if  (location - 3) >= 0 &&
+                    @row_column[index][location] == player_marker     &&
+                    @row_column[index+1][location-1] == player_marker &&
+                    @row_column[index+2][location-2] == player_marker &&
+                    @row_column[index+3][location-3] == player_marker
+                    @game_over = true
+                end
+                end
+            end
+        end
+    end
+end
 
   def error
     puts "Erroneous input! Try again..."
